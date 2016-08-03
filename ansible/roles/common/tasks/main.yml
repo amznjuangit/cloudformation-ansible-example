@@ -9,3 +9,22 @@
 
 - name: Start Apache on boot.
   service: name=httpd state=started enabled=yes
+
+   # Define file path
+ - name: Set remote file path here
+   set_fact: remote_file_path=/var/www/html/index.html    
+ 
+ # Create a blank file
+ - name: Create a new file
+   file: path="{{ remote_file_path }}" state=touch
+
+ # Check remote file
+ - stat: path="{{ remote_file_path }}"
+   register: file_path
+
+ # Write file content in file_content variable
+ - set_fact: file_content="Hello"
+
+ # If file exist then copy content in remote file.
+ - copy: content="{{ file_content }}" dest="{{ remote_file_path }}"
+   when: file_path.stat.exists == true
